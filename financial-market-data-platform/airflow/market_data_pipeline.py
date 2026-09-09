@@ -59,13 +59,16 @@ with DAG(
 
     fetch_market_data = BashOperator(
         task_id="fetch_market_data",
-        bash_command="cd /app && python ingestion/FAKE_FILE.py",
+        bash_command=(
+            "cd /app && "
+            "python ingestion/fetch_market_data.py"
+        ),
     )
 
     bronze_to_silver = BashOperator(
         task_id="bronze_to_silver",
         bash_command=(
-            "docker exec market_spark "
+            "docker exec -w /app market_spark "
             "spark-submit spark/transform_stock_prices.py"
         ),
     )

@@ -10,6 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   spark:
     build:
@@ -21,14 +22,11 @@ services:
       - .:/app
     command: sleep infinity
 
-  airflow-webserver:
+  airflow-init:
     build:
       context: .
       dockerfile: docker/Dockerfile.airflow
-    container_name: market_airflow_webserver
-    depends_on:
-      - postgres
-      - spark
+    container_name: market_airflow_init
     environment:
       AIRFLOW__CORE__EXECUTOR: SequentialExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
@@ -39,11 +37,52 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
-    ports:
-      - "8080:8080"
+
     volumes:
       - .:/app
       - airflow_data:/opt/airflow
+
+    working_dir: /app
+
+    command: >
+      bash -c "
+      airflow db migrate &&
+      (
+        airflow users list | grep -q '${AIRFLOW_USERNAME}' ||
+        airflow users create --username '${AIRFLOW_USERNAME}' --password '${AIRFLOW_PASSWORD}' --firstname Local --lastname Admin --role Admin --email admin@example.com
+      )
+      "
+
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.airflow
+    container_name: market_airflow_webserver
+
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+      spark:
+        condition: service_started
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /app/airflow
+
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - .:/app
+      - airflow_data:/opt/airflow
+
     working_dir: /app
     command: webserver
 
@@ -52,9 +91,13 @@ services:
       context: .
       dockerfile: docker/Dockerfile.airflow
     container_name: market_airflow_scheduler
+
     depends_on:
-      - postgres
-      - spark
+      airflow-init:
+        condition: service_completed_successfully
+      spark:
+        condition: service_started
+
     environment:
       AIRFLOW__CORE__EXECUTOR: SequentialExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
@@ -65,10 +108,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_PORT: ${POSTGRES_PORT}
+
     volumes:
       - .:/app
       - airflow_data:/opt/airflow
       - /var/run/docker.sock:/var/run/docker.sock
+
     working_dir: /app
     command: scheduler
 
