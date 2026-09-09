@@ -27,7 +27,7 @@ flowchart LR
     E[Silver<br/>Parquet]
     F[(PostgreSQL)]
     G[dbt]
-    H[Gold<br/>mart_stock_performance]
+    H[Gold Analytics Mart<br/>mart_stock_performance]
 
     A --> B
     B --> C
@@ -44,6 +44,7 @@ flowchart LR
     AIRFLOW -.-> F
     AIRFLOW -.-> G
 ```
+
 ## Data Pipeline
 
 ### 1. Ingestion
