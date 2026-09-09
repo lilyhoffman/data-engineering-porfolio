@@ -1,0 +1,6 @@
+ticker,company_name,sector,industry,exchange
+AAPL,Apple Inc.,Technology,Consumer Electronics,NASDAQ
+MSFT,Microsoft Corporation,Technology,Software - Infrastructure,NASDAQ
+NVDA,NVIDIA Corporation,Technology,Semiconductors,NASDAQ
+JPM,JPMorgan Chase & Co.,Financial Services,Banks - Diversified,NYSE
+AMZN,Amazon.com Inc.,Consumer Cyclical,Internet Retail,NASDAQ

@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_stock_prices
+    columns:
+      - name: ticker
+        tests:
+          - not_null
+
+      - name: trade_date
+        tests:
+          - not_null
+
+      - name: close_price
+        tests:
+          - not_null
+
+  - name: stg_companies
+    columns:
+      - name: ticker
+        tests:
+          - unique
+          - not_null
+
+      - name: company_name
+        tests:
+          - not_null

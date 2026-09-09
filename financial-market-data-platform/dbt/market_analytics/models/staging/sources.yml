@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: market_data
+    schema: public
+    tables:
+      - name: stock_prices
+      - name: companies

@@ -1,0 +1,26 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated pipeline data
+data/bronze/
+data/silver/
+
+# dbt generated files
+**/target/
+**/logs/
+**/dbt_packages/
+.user.yml
+
+# Spark / Hadoop generated files
+*.crc
+_SUCCESS
+
+# IDE / OS
+.vscode/
+.DS_Store
