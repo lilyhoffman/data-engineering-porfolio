@@ -8,7 +8,7 @@ An end-to-end data engineering pipeline that incrementally ingests financial mar
 - **Bronze/Silver/Gold architecture** separating raw, cleaned, and analytics-ready data.
 - **PySpark transformations** for schema enforcement, validation, deduplication, and reference-data enrichment.
 - **Parquet storage** for cleaned Silver-layer datasets.
-- **PostgreSQL data warehouse** containing stock prices and company reference data.
+- **PostgreSQL analytics database** containing stock prices, company reference data, and transformed analytics models.
 - **dbt transformations** for staging and analytics models, including daily returns and 5-day moving averages.
 - **Automated data quality tests** validating uniqueness, null values, price ranges, and analytics outputs.
 - **Apache Airflow orchestration** with weekday scheduling, task dependencies, automatic retries, and failure handling.
@@ -48,6 +48,7 @@ flowchart LR
 ## Data Pipeline
 
 ### 1. Ingestion
+
 Python retrieves historical and daily stock-price data from Yahoo Finance for a configured set of companies. The ingestion process determines the latest date already stored for each ticker and requests only new data, preventing unnecessary reprocessing.
 
 Raw data is stored in the Bronze layer using ingestion-date partitions:
@@ -55,6 +56,7 @@ Raw data is stored in the Bronze layer using ingestion-date partitions:
 `data/bronze/stock_prices/year=YYYY/month=MM/day=DD/`
 
 ### 2. Bronze → Silver Processing
+
 PySpark reads the raw CSV files using an explicit schema and applies data-quality transformations, including:
 
 - Removing duplicate ticker/date records
@@ -65,11 +67,13 @@ PySpark reads the raw CSV files using an explicit schema and applies data-qualit
 Validated and enriched records are written to the Silver layer in Parquet format.
 
 ### 3. PostgreSQL Loading
+
 Silver data is loaded into PostgreSQL using an idempotent loading process.
 
 Stock prices use `(ticker, trade_date)` as the primary key, preventing duplicate market records across repeated pipeline runs. Company metadata is upserted so reference information can be updated without creating duplicate companies.
 
 ### 4. Analytics Transformation
+
 dbt transforms the PostgreSQL source tables into analytics-ready models.
 
 The Gold-layer `mart_stock_performance` model combines company information with stock-price data and calculates:
@@ -78,6 +82,7 @@ The Gold-layer `mart_stock_performance` model combines company information with 
 - 5-day moving average
 
 ### 5. Data Quality
+
 dbt tests validate the pipeline before a run is considered successful. Tests cover:
 
 - Required fields
@@ -87,12 +92,14 @@ dbt tests validate the pipeline before a run is considered successful. Tests cov
 - Valid Gold-layer analytics outputs
 
 ### 6. Orchestration & Observability
+
 Apache Airflow orchestrates the complete workflow on a weekday schedule:
 
 `Ingestion → PySpark → PostgreSQL → dbt run → dbt test`
 
-Tasks automatically retry after failures. Pipeline runs are also recorded in PostgreSQL with the Airflow run ID, start and end timestamps, final status, and error information for failed runs.
+Tasks automatically retry after failures. Pipeline runs are recorded in PostgreSQL with the Airflow run ID, start and end timestamps, final status, and error information for failed runs.
 
+The Docker environment automatically initializes the PostgreSQL schema and Airflow metadata, allowing the pipeline to run from a clean environment without manual database setup.
 
 ## Tech Stack
 
@@ -100,7 +107,7 @@ Tasks automatically retry after failures. Pipeline runs are also recorded in Pos
 | --- | --- |
 | Python | Incremental market data ingestion and database loading |
 | Yahoo Finance | Financial market data source |
-| Apache Spark / PySpark | Distributed data validation, transformation, and enrichment |
+| Apache Spark / PySpark | Data validation, transformation, and enrichment |
 | CSV | Raw Bronze-layer storage |
 | Parquet | Cleaned Silver-layer storage |
 | PostgreSQL | Relational and analytics storage |
@@ -174,7 +181,6 @@ Stores pipeline execution metadata for observability and failure tracking.
 | `status` | Pipeline status (`RUNNING`, `SUCCESS`, or `FAILED`) |
 | `rows_inserted` | Number of records inserted when applicable |
 | `error_message` | Error captured when a pipeline run fails |
-
 
 ## Project Structure
 
@@ -254,7 +260,7 @@ Copy the provided environment template:
 cp .env.example .env
 ```
 
-Update `.env` with the desired PostgreSQL credentials.
+Update `.env` with the desired PostgreSQL and Airflow credentials.
 
 ### 3. Build and start the services
 
@@ -262,7 +268,7 @@ Update `.env` with the desired PostgreSQL credentials.
 docker compose up -d --build
 ```
 
-This starts the project's PostgreSQL, Spark, Airflow webserver, and Airflow scheduler containers.
+This initializes the PostgreSQL schema and Airflow metadata, then starts the PostgreSQL, Spark, Airflow webserver, and Airflow scheduler services.
 
 ### 4. Open Airflow
 
@@ -270,7 +276,7 @@ Navigate to:
 
 `http://127.0.0.1:8080`
 
-Enable and trigger the `financial_market_data_pipeline` DAG.
+Log in using the Airflow credentials configured in `.env`, then enable and trigger the `financial_market_data_pipeline` DAG.
 
 ### 5. Pipeline Execution
 
