@@ -18,105 +18,32 @@ An end-to-end data engineering pipeline that incrementally ingests financial mar
 ## Architecture
 
 ```mermaid
-flowchart TB
+flowchart LR
 
-    %% =========================
-    %% SOURCE + INGESTION
-    %% =========================
+    A[Yahoo Finance API]
+    B[Python Ingestion]
+    C[Bronze<br/>CSV]
+    D[PySpark]
+    E[Silver<br/>Parquet]
+    F[(PostgreSQL)]
+    G[dbt]
+    H[Gold<br/>mart_stock_performance]
 
-    SOURCE["Yahoo Finance API"]
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
 
-    INGEST["Python Ingestion<br/>• Incremental extraction<br/>• Idempotent loading"]
+    AIRFLOW[Apache Airflow<br/>Scheduling • Retries • Monitoring]
 
-    SOURCE -->|Daily market data| INGEST
-
-
-    %% =========================
-    %% DATA PIPELINE
-    %% =========================
-
-    subgraph MEDALLION["Data Processing & Storage"]
-
-        direction LR
-
-        subgraph BRONZE["BRONZE — Raw"]
-            B["Partitioned CSV<br/>year / month / day"]
-        end
-
-        subgraph PROCESS["Processing"]
-            SPARK["PySpark<br/>• Schema enforcement<br/>• Validation<br/>• Deduplication<br/>• Company reference join"]
-        end
-
-        subgraph SILVER["SILVER — Cleaned"]
-            S["Parquet<br/>Validated & enriched<br/>stock price data"]
-        end
-
-        subgraph DATABASE["Relational Storage"]
-            PG[("PostgreSQL<br/>stock_prices<br/>companies")]
-        end
-
-        subgraph GOLD["GOLD — Analytics"]
-            DBT["dbt<br/>Staging models<br/>Business transformations<br/>Data quality tests"]
-
-            MART["mart_stock_performance<br/>• Daily returns<br/>• 5-day moving averages"]
-        end
-
-        B --> SPARK
-        SPARK --> S
-        S --> PG
-        PG --> DBT
-        DBT --> MART
-
-    end
-
-    INGEST --> B
-
-
-    %% =========================
-    %% ORCHESTRATION
-    %% =========================
-
-    subgraph ORCHESTRATION["Orchestration & Reliability"]
-
-        AIRFLOW["Apache Airflow<br/>• Weekday scheduling<br/>• Task dependencies<br/>• Automatic retries<br/>• Failure handling"]
-
-        AUDIT[("pipeline_runs<br/>Run status<br/>Start / end time<br/>Error messages")]
-
-        AIRFLOW -->|Writes run metadata| AUDIT
-
-    end
-
-
-    %% Airflow orchestrates the workflow,
-    %% rather than carrying the data itself.
-
-    AIRFLOW -.->|orchestrates| INGEST
-    AIRFLOW -.->|orchestrates| SPARK
-    AIRFLOW -.->|orchestrates| PG
-    AIRFLOW -.->|orchestrates| DBT
-
-
-    %% =========================
-    %% STYLING
-    %% =========================
-
-    classDef source fill:#f8f9fa,stroke:#495057,stroke-width:2px
-    classDef bronze fill:#fff3cd,stroke:#d39e00,stroke-width:2px
-    classDef processing fill:#e2e3e5,stroke:#6c757d,stroke-width:2px
-    classDef silver fill:#e7f1ff,stroke:#0d6efd,stroke-width:2px
-    classDef database fill:#e8daef,stroke:#7d3c98,stroke-width:2px
-    classDef gold fill:#d1e7dd,stroke:#198754,stroke-width:2px
-    classDef orchestration fill:#f8d7da,stroke:#dc3545,stroke-width:2px
-
-    class SOURCE,INGEST source
-    class B bronze
-    class SPARK processing
-    class S silver
-    class PG database
-    class DBT,MART gold
-    class AIRFLOW,AUDIT orchestration
+    AIRFLOW -.-> B
+    AIRFLOW -.-> D
+    AIRFLOW -.-> F
+    AIRFLOW -.-> G
 ```
-
 ## Data Pipeline
 
 ### 1. Ingestion
