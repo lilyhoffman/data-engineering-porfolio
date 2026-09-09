@@ -37,7 +37,7 @@ flowchart LR
     F --> G
     G --> H
 
-    AIRFLOW[Apache Airflow<br/>Scheduling • Retries • Monitoring]
+    AIRFLOW[Apache Airflow<br/>Scheduling<br/>Retries<br/>Monitoring]
 
     AIRFLOW -.-> B
     AIRFLOW -.-> D
