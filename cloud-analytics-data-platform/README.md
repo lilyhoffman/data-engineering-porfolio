@@ -6,37 +6,41 @@ The pipeline processes approximately 3.48 million raw trip records and produces 
 
 ## Architecture
 
-```text
-NYC TLC Trip Data
-        |
-        v
-Python Ingestion
-        |
-        v
-Amazon S3
-Bronze Layer
-        |
-        v
-AWS Glue + PySpark
-        |
-        |-- Data quality validation
-        |-- Schema standardization
-        |-- Derived fields
-        |-- Partitioning
-        v
-Amazon S3
-Silver Layer (Parquet)
-        |
-        v
-AWS Glue Data Catalog
-        |
-        v
-Amazon Athena
-        |
-        v
-SQL Analytics
-```
+## Architecture
 
+```mermaid
+flowchart TD
+    A[NYC TLC Trip Data]
+    B[Python Ingestion]
+    C[Amazon S3<br/>Bronze Layer]
+    D[AWS Glue + PySpark]
+    E[Data Quality Validation]
+    F[Schema Standardization]
+    G[Derived Fields]
+    H[Partitioning]
+    I[Amazon S3<br/>Silver Layer - Parquet]
+    J[AWS Glue Data Catalog]
+    K[Amazon Athena]
+    L[SQL Analytics]
+
+    A --> B
+    B --> C
+    C --> D
+
+    D --> E
+    D --> F
+    D --> G
+    D --> H
+
+    E --> I
+    F --> I
+    G --> I
+    H --> I
+
+    I --> J
+    J --> K
+    K --> L
+```
 ## Technologies
 
 - Python
