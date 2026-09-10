@@ -94,3 +94,16 @@ data-engineering-portfolio/
 │   └── README.md
 │
 └── README.md
+```
+
+Each project contains its own README with architecture, implementation details, setup instructions, and technical decisions.
+
+## About
+
+I am a data professional with experience in data analytics, automation, and backend development, with a particular interest in building reliable data systems and pipelines.
+
+This portfolio focuses on applying data engineering technologies to practical projects involving batch processing, real-time streaming, distributed computing, orchestration, databases, and containerized infrastructure.
+
+# Contact
+[Github](https://github.com/lilyhoffman/data-engineering-porfolio)
+[Linkedin](https://www.linkedin.com/in/lily-hoffman-79387425a/)
