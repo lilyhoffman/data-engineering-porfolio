@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Spark checkpoints
+data/checkpoints/
+
+# Spark generated files
+*.crc
+_SUCCESS
+
+# IDE / OS
+.vscode/
+.DS_Store
