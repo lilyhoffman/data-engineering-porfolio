@@ -50,28 +50,57 @@ The pipeline implements event-time processing, windowed aggregations, watermarki
 
 ---
 
+### 3. Cloud Analytics Data Platform
+
+**Technologies:** Python, SQL, PySpark, AWS S3, AWS Glue, AWS Glue Data Catalog, Amazon Athena, Terraform, Parquet
+
+Built a cloud-based analytics data platform on AWS that ingests 3.48M NYC Yellow Taxi records into an S3 data lake and transforms raw data into cleaned, partitioned datasets using AWS Glue and PySpark.
+
+The pipeline applies data quality rules, organizes analytics-ready Parquet data using time-based partitioning, catalogs the dataset with AWS Glue Data Catalog, and enables serverless SQL analytics through Amazon Athena. Terraform definitions provide Infrastructure as Code for the core AWS resources.
+
+**Key Features:**
+
+- Python-based ingestion into Amazon S3
+- Bronze/Silver data lake architecture
+- AWS Glue and PySpark ETL
+- Data quality validation, removing 151K+ invalid records
+- Partitioned Parquet storage
+- AWS Glue Data Catalog integration
+- Partition-aware Amazon Athena queries
+- Infrastructure as Code with Terraform
+- IAM-based AWS access control
+
+[View Project](./cloud-analytics-data-platform)
+
+---
+
 ## Technical Skills Demonstrated
 
 **Languages:** Python, SQL
 
-**Data Engineering:** Apache Spark, PySpark, Apache Kafka, Apache Airflow, dbt
+**Data Engineering:** Apache Spark, PySpark, Apache Kafka, Apache Airflow, dbt, AWS Glue
+
+**Cloud & Analytics:** AWS S3, AWS Glue Data Catalog, Amazon Athena
 
 **Databases:** PostgreSQL
 
-**Infrastructure:** Docker, Docker Compose
+**Infrastructure:** Docker, Docker Compose, Terraform
 
 **Data Engineering Concepts:**
+
 - ETL / ELT Pipelines
-- Batch Processing
-- Stream Processing
+- Batch & Stream Processing
+- Cloud Data Lakes
 - Incremental Data Ingestion
+- Distributed Data Processing
 - Data Modeling
 - Data Quality Testing
 - Pipeline Orchestration
-- Event-Time Processing
-- Watermarking
+- Event-Time Processing & Watermarking
 - Idempotent Data Loads
 - Checkpointing & Fault Recovery
+- Data Partitioning & Parquet Storage
+- Infrastructure as Code
 - Bronze / Silver / Gold Architecture
 
 ## Repository Structure
@@ -91,6 +120,13 @@ data-engineering-portfolio/
 │   ├── streaming/
 │   ├── sql/
 │   ├── docker/
+│   └── README.md
+│
+├── cloud-analytics-data-platform/
+│   ├── ingestion/
+│   ├── glue/
+│   ├── sql/
+│   ├── terraform/
 │   └── README.md
 │
 └── README.md
