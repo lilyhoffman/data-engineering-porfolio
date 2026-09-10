@@ -105,5 +105,4 @@ I am a data professional with experience in data analytics, automation, and back
 This portfolio focuses on applying data engineering technologies to practical projects involving batch processing, real-time streaming, distributed computing, orchestration, databases, and containerized infrastructure.
 
 # Contact
-[Github](https://github.com/lilyhoffman/data-engineering-porfolio)
-[Linkedin](https://www.linkedin.com/in/lily-hoffman-79387425a/)
+[Github](https://github.com/lilyhoffman/data-engineering-porfolio) | [Linkedin](https://www.linkedin.com/in/lily-hoffman-79387425a/)
