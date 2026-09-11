@@ -6,8 +6,6 @@ The pipeline processes approximately 3.48 million raw trip records and produces 
 
 ## Architecture
 
-## Architecture
-
 ```mermaid
 flowchart TD
     A[NYC TLC Trip Data]
